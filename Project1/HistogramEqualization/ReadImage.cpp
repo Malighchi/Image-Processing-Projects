@@ -1,8 +1,9 @@
-#include <iostream.h>
-#include <fstream.h>
-#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include "stdlib.h"
 
 #include "image.h"
+using namespace std;
 
 int readImage(char fname[], ImageType& image)
 {

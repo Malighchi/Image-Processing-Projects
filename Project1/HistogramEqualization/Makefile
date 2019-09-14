@@ -1,4 +1,4 @@
-TARGET = exercise3
+TARGET = imagesampling
 LIBS = -lm #Math Library, just a placeholder
 HEADERS = image.h
 SRCS = imagesampling.cpp image.cpp ReadImage.cpp WriteImage.cpp ReadImageHeader.cpp
