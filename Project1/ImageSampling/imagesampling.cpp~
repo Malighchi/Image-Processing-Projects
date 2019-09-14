@@ -1,0 +1,30 @@
+#include <iostream.h>
+#include <fstream.h>
+#include <stdlib.h>
+
+#include "image.h"
+
+int readImageHeader(char[], int&, int&, int&, bool&);
+int readImage(char[], ImageType&);
+int writeImage(char[], ImageType&);
+
+int main(int argc, char *argv[]){
+    int i, j; 
+    int M, N, Q;
+    bool type;
+    int val;
+    // read image header
+    readImageHeader(argv[1], N, M, Q, type);
+
+    // allocate memory for the image array
+    ImageType image(N, M, Q);
+
+    // read image
+    readImage(argv[1], image);
+
+    // write image
+    writeImage(argv[2], image);
+
+    return (1);
+
+}
