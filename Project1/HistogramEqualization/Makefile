@@ -1,7 +1,7 @@
-TARGET = imagesampling
+TARGET = histogramequalization
 LIBS = -lm #Math Library, just a placeholder
 HEADERS = image.h
-SRCS = imagesampling.cpp image.cpp ReadImage.cpp WriteImage.cpp ReadImageHeader.cpp
+SRCS = histogramequalization.cpp image.cpp ReadImage.cpp WriteImage.cpp ReadImageHeader.cpp
 OBJECTS := $(patsubst %.cpp,%.o,$(SRCS))
 CXX = g++
 CXX_FLAGS = -Wall -std=c++11 #C++11 just for reference, not necessary
