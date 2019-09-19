@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cmath>
 #include "stdlib.h"
 
 #include "image.h"
@@ -41,35 +42,51 @@ void equalization(ImageType ogImage, ImageType& eqImage){
   int val = 0;
   ogImage.getImageInfo(rows, cols, levels);
 
-  float hist_arr[levels];
-  for(int i = 0; i < levels; i++){
+  double hist_arr[levels + 1];
+  int test = 0;
+  for(int i = 0; i < levels + 1; i++){
     hist_arr[i] = 0;
   }
   for(int x = 0; x < rows; x++){
     for (int y =0; y<cols; y++){
+
       ogImage.getPixelVal(x, y, val);
-      hist_arr[val]++;
+      if(val == 255){
+        test++;
+      }
+      //cout << val << endl;
+      (hist_arr[val])++;
+    //  cout << hist_arr[val] << endl;
     }
   }
-
+    cout << hist_arr[255] << endl;
+    cout << test << endl;
   for(int i = 0; i < levels+1; i++){
+    //  cout << hist_arr[i] << endl;
       hist_arr[i] /= (rows*cols);
-    }
-  int k = 1;
-  while(k<levels+1){
-    float sum = 0;
-    for(int i =0; i < k; i++){
-      sum +=(hist_arr[i] * levels);
-    }
-    //cout<<sum<<endl;
-    hist_arr[k-1] = sum;
-    k++;
-    }
 
+    }
+    cout << hist_arr[147] << endl;
+  int k = 1;
+  double new_hist[levels];
+  while(k<levels+1){
+    double sum = 0;
+    for(int i =0; i < k; i++){
+      sum = sum + (hist_arr[i] * levels);
+    }
+    //cout<<hist_arr[k-1]<<endl;
+  //  cout<<sum<<endl;
+    new_hist[k-1] = floor(sum);
+  //cout << new_hist[k-1] << endl;
+    k++;
+    sum = 0;
+    }
+    cout << "did it work" << endl;
   for(int x = 0; x < rows; x++){
     for (int y =0; y<cols; y++){
       ogImage.getPixelVal(x, y, val);
-      eqImage.setPixelVal(x, y, hist_arr[val]);
+      cout << val << endl;
+      eqImage.setPixelVal(x, y, new_hist[val]);
       }
     }
   }
