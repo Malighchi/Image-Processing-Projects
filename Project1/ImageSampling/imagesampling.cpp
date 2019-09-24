@@ -10,7 +10,7 @@ int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 void sampling(ImageType, ImageType&, int);
-void upscale(ImageType, ImageType&, int); 
+void upscale(ImageType, ImageType&, int);
 
 int main(int argc, char *argv[]){
     int M, N, Q;
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
     ImageType resizedImage(N, M, Q);
     upscale(newimage, resizedImage, scale_factor);
 
-    cout<<"here"<<endl;
+    //cout<<"here"<<endl;
     writeImage(argv[2], resizedImage);
 
     return (1);
@@ -43,12 +43,12 @@ void sampling(ImageType ogImage, ImageType& newimage, int samplefactor){
     int rows = 0;
     int cols = 0;
     int levels = 0;
-    
+
     ogImage.getImageInfo(rows, cols, levels);
 
     int x = 0;
     int y = 0;
-    int val = 0; 
+    int val = 0;
     for(int i = 0; i < rows; i+=samplefactor){
         for (int j = 0; j < cols; j+=samplefactor){
             ogImage.getPixelVal(i, j, val);
@@ -57,19 +57,19 @@ void sampling(ImageType ogImage, ImageType& newimage, int samplefactor){
         }
         x++;
         y=0;
-    } 
+    }
     //cout<<"done"<<endl;
 }
 
 void upscale(ImageType ogImage, ImageType& resizeImage, int samplefactor){
     int x = 0;
     int y = 0;
-    int val = 0; 
+    int val = 0;
 
     int rows = 0;
     int cols = 0;
     int levels = 0;
-    
+
     resizeImage.getImageInfo(rows, cols, levels);
 
     for(int i = 0; i < rows; i ++){
@@ -77,7 +77,7 @@ void upscale(ImageType ogImage, ImageType& resizeImage, int samplefactor){
             ogImage.getPixelVal(x, y, val);
             resizeImage.setPixelVal(i, j, val);
             if((j+1) % samplefactor == 0){
-                y++;  
+                y++;
             }
         }
         if((i+1) % samplefactor == 0){
@@ -86,8 +86,3 @@ void upscale(ImageType ogImage, ImageType& resizeImage, int samplefactor){
         y=0;
     }
 }
-
-
-
-
-

@@ -66,7 +66,7 @@ void equalization(ImageType ogImage, ImageType& eqImage){
       hist_arr[i] /= (rows*cols);
 
     }
-    cout << hist_arr[147] << endl;
+  //  cout << hist_arr[147] << endl;
   int k = 1;
   double new_hist[levels];
   while(k<levels+1){
@@ -81,7 +81,7 @@ void equalization(ImageType ogImage, ImageType& eqImage){
     k++;
     sum = 0;
     }
-    cout << "did it work" << endl;
+    //cout << "did it work" << endl;
   for(int x = 0; x < rows; x++){
     for (int y =0; y<cols; y++){
       ogImage.getPixelVal(x, y, val);
