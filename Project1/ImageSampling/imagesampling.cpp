@@ -17,6 +17,7 @@ int main(int argc, char *argv[]){
     bool type;
     int scale_factor = argv[3][0] - '0';
     // read image header
+
     readImageHeader(argv[1], N, M, Q, type);
 
     // allocate memory for the image array
@@ -27,8 +28,9 @@ int main(int argc, char *argv[]){
 
     // write image
     ImageType newimage(N/scale_factor, M/scale_factor, Q);
+    cout << "what's happening" << endl;
     sampling(image, newimage, scale_factor);
-
+    cout << "what's happening" << endl;
     ImageType resizedImage(N, M, Q);
     upscale(newimage, resizedImage, scale_factor);
 
@@ -45,7 +47,7 @@ void sampling(ImageType ogImage, ImageType& newimage, int samplefactor){
     int levels = 0;
 
     ogImage.getImageInfo(rows, cols, levels);
-
+    cout << "??" << endl;
     int x = 0;
     int y = 0;
     int val = 0;
@@ -58,7 +60,7 @@ void sampling(ImageType ogImage, ImageType& newimage, int samplefactor){
         x++;
         y=0;
     }
-    //cout<<"done"<<endl;
+    cout<<"done"<<endl;
 }
 
 void upscale(ImageType ogImage, ImageType& resizeImage, int samplefactor){
