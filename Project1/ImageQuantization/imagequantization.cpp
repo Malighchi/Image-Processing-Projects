@@ -56,5 +56,4 @@ void quantization(ImageType ogImage, ImageType& newimage, int quantization_facto
             newimage.setPixelVal(i, j, val);
         }
     }
-    //cout<<"done"<<endl;
 }

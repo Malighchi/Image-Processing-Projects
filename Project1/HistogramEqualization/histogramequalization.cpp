@@ -54,9 +54,8 @@ void equalization(ImageType ogImage, ImageType& eqImage){
       if(val == 255){
         test++;
       }
-      //cout << val << endl;
+
       (hist_arr[val])++;
-    //  cout << hist_arr[val] << endl;
     }
   }
     cout << hist_arr[255] << endl;
@@ -74,18 +73,15 @@ void equalization(ImageType ogImage, ImageType& eqImage){
     for(int i =0; i < k; i++){
       sum = sum + (hist_arr[i] * levels);
     }
-    //cout<<hist_arr[k-1]<<endl;
-  //  cout<<sum<<endl;
+
     new_hist[k-1] = floor(sum);
-  //cout << new_hist[k-1] << endl;
     k++;
     sum = 0;
     }
-    //cout << "did it work" << endl;
+
   for(int x = 0; x < rows; x++){
     for (int y =0; y<cols; y++){
       ogImage.getPixelVal(x, y, val);
-      cout << val << endl;
       eqImage.setPixelVal(x, y, new_hist[val]);
       }
     }
