@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
     ImageType normalizedImage(N, M, Q);
     correlation(image, newimage, mask);
     normalizeImage(newimage, normalizedImage);
-    writeImage(argv[3], newimage);
+    writeImage(argv[3], normalizedImage);
 
     return (1);
 
@@ -59,9 +59,9 @@ void correlation(ImageType oldImg, ImageType& newImg, ImageType mask){
   int M, N, Q;
   int M_mask, N_mask, Q_mask;
   oldImg.getImageInfo(N,M,Q);
-  cout << N << " " << M << endl;
   mask.getImageInfo(N_mask,M_mask,Q_mask);
-  cout << "its cool here" << endl;
+
+
   int** filter = convertToMask(mask, N_mask, M_mask);
   for(int i = 0; i < N; i++){
     for(int j = 0; j < M; j++){
@@ -69,7 +69,6 @@ void correlation(ImageType oldImg, ImageType& newImg, ImageType mask){
       int sum = correlationSum(sub, N_mask, M_mask, filter);
       newImg.setPixelVal(i,j,sum);
     }
-    cout << i << endl;
   }
 }
 
@@ -78,7 +77,7 @@ int** subimage(ImageType img, int x, int y, int n_mask, int m_mask){
   sub = new int*[n_mask];
   int M = 0;
   int N = 0;
-  int Q = 0;
+  int Q = 255;
   int x_count = 0;
   int y_count = 0;
   int pixel = 0;
@@ -102,9 +101,9 @@ int** subimage(ImageType img, int x, int y, int n_mask, int m_mask){
     }
     y_count = 0;
     x_count++;
-  }
+}
+
   return sub;
-  cout << "but is it cool here?" << endl;
 }
 
 void normalizeImage(ImageType ogImage, ImageType& newImage){
@@ -130,12 +129,11 @@ void normalizeImage(ImageType ogImage, ImageType& newImage){
     for(int l = 0; l < M; l++){
       ogImage.getPixelVal(k,l,x);
       newPix = (double)(x*255)/(double)max;
-      pix = (int)abs((floor(newPix)));
-      cout << pix << " ";
+      pix = (int)newPix;
       newImage.setPixelVal(k,l,pix);
     }
   }
-  cout << counter << endl;
+//  cout << counter << endl;
 }
 
 int** convertToMask(ImageType mask, int N, int M){
