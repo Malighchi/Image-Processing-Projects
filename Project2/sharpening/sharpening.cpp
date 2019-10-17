@@ -79,6 +79,7 @@ int main(int argc, char *argv[]){
     ImageType normalVS(N,M,Q);
     ImageType normalVP(N,M,Q);
     ImageType normalHP(N,M,Q);
+    ImageType normalP(N,M,Q);
 
     filter(image, vsimg,mask_size, N, M, v_sobel);
     filter(image, hsimg,mask_size,N,M,h_sobel);
@@ -95,14 +96,17 @@ int main(int argc, char *argv[]){
     normalizeImage(gradS, normalS);
     normalizeImage(vpimg, normalVP);
     normalizeImage(hpimg, normalHP);
+    normalizeImage(gradP, normalP);
 
+    //gradientMagn(hsimg,vsimg,gradS);
+    //gradientMagn(hpimg,vpimg,gradP);
     writeImage(argv[2], normalVS);
     writeImage(argv[3], normalHS);
     writeImage(argv[4], normalVP);
     writeImage(argv[5], normalHP);
     writeImage(argv[6], normalLap);
     writeImage(argv[7], normalS);
-    writeImage(argv[8], gradP);
+    writeImage(argv[8], normalP);
 
     return (1);
 
