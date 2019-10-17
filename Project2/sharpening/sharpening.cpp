@@ -16,6 +16,36 @@ int writeImage(char[], ImageType&);
 void gradientMagn(ImageType, ImageType, ImageType&);
 void filter(ImageType img, ImageType& filterimg, int filtersize, int N, int M, int mask[]);
 
+void normalizeImage(ImageType ogImage, ImageType& newImage){
+  int M = 0;
+  int N = 0;
+  int Q = 0;
+  int x = 0;
+  int counter = 0;
+  double newPix = 0;
+  int pix = 0;
+  ogImage.getImageInfo(N, M, Q);
+  int max = 0;
+  int min = 1000;
+  for(int i = 0; i < N; i++){
+    for(int j = 0; j < M; j++){
+      ogImage.getPixelVal(i,j,x);
+      max = std::max(max, x);
+      min = std::min(min, x);
+    }
+  }
+  cout << max << " " << min << endl;
+  for(int k = 0; k < N; k++){
+    for(int l = 0; l < M; l++){
+      ogImage.getPixelVal(k,l,x);
+      newPix = (double)((x-min)*255)/(double)(max-min);
+      pix = (int)newPix;
+      newImage.setPixelVal(k,l,pix);
+    }
+  }
+
+}
+
 int main(int argc, char *argv[]){
     int M, N, Q;
     int mask_size = 3;
@@ -43,6 +73,12 @@ int main(int argc, char *argv[]){
     ImageType lapimg(N,M,Q);
     ImageType gradS(N,M,Q);
     ImageType gradP(N,M,Q);
+    ImageType normalLap(N,M,Q);
+    ImageType normalS(N,M,Q);
+    ImageType normalHS(N,M,Q);
+    ImageType normalVS(N,M,Q);
+    ImageType normalVP(N,M,Q);
+    ImageType normalHP(N,M,Q);
 
     filter(image, vsimg,mask_size, N, M, v_sobel);
     filter(image, hsimg,mask_size,N,M,h_sobel);
@@ -50,15 +86,22 @@ int main(int argc, char *argv[]){
     filter(image, hpimg,mask_size,N,M, h_prewitt);
     filter(image, lapimg,mask_size,N,M, laplacian);
 
-
     gradientMagn(hsimg,vsimg,gradS);
     gradientMagn(hpimg,vpimg,gradP);
-    writeImage(argv[2], vsimg);
-    writeImage(argv[3], hsimg);
-    writeImage(argv[4], vpimg);
-    writeImage(argv[5], hpimg);
-    writeImage(argv[6], lapimg);
-    writeImage(argv[7], gradS);
+
+    normalizeImage(vsimg, normalVS);
+    normalizeImage(hsimg, normalHS);
+    normalizeImage(lapimg, normalLap);
+    normalizeImage(gradS, normalS);
+    normalizeImage(vpimg, normalVP);
+    normalizeImage(hpimg, normalHP);
+
+    writeImage(argv[2], normalVS);
+    writeImage(argv[3], normalHS);
+    writeImage(argv[4], normalVP);
+    writeImage(argv[5], normalHP);
+    writeImage(argv[6], normalLap);
+    writeImage(argv[7], normalS);
     writeImage(argv[8], gradP);
 
     return (1);
