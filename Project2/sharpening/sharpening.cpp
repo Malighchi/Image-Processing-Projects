@@ -52,8 +52,12 @@ int main(int argc, char *argv[]){
     bool type;
     int v_prewitt[9] = {-1,0,1,-1,0,1,-1,0,1};
     int h_prewitt[9] = {-1,-1,-1,0,0,0,1,1,1};
-    int v_sobel[9] = {-1,-2,-1,0,0,0,1,2,1};
-    int h_sobel[9] = {-1,0,1,-2,0,2,-1,0,2};
+    int h_sobel[9] = {-1,-2,-1,
+                      0,0,0,
+                      1,2,1};
+    int v_sobel[9] = {-1,0,1
+                     ,-2,0,2,
+                     -1,0,2};
     int laplacian[9] = {0,1,0,1,-4,1,0,1,0};
 
 
@@ -98,7 +102,7 @@ int main(int argc, char *argv[]){
     normalizeImage(hpimg, normalHP);
     normalizeImage(gradP, normalP);
 
-    //gradientMagn(hsimg,vsimg,gradS);
+  //  gradientMagn(hsimg,vsimg,gradS);
     //gradientMagn(hpimg,vpimg,gradP);
     writeImage(argv[2], normalVS);
     writeImage(argv[3], normalHS);
