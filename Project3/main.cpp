@@ -52,13 +52,14 @@ void fft(float data[], unsigned long nn, int isign)
 #undef SWAP
 
 int main (){
-  float data[9] = {0,2,3,4,4,0,0,0,0};
+  float data[9] = {0,2,0,3,0,4,0,4,0};
   fft(data,4,-1);
   for(int i = 1; i < 9; i++)
     data[i] /= 4;
   for(int i = 1; i < 9; i+=2){
 
-     std::cout << data[i] <<" + "<<data[i+1]<<"j"<< std::endl;
+     std::cout << data[i] <<" + "<<data[i+1]<<"j"<<std::endl;
+	 std::cout << "Magnitude: "<<sqrt(((data[i]*data[i])+(data[i+1]*data[i+1])))<<std::endl;
   }
   std::cout << std::endl;
 
