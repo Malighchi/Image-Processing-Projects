@@ -27,11 +27,13 @@ void gradientMagn(float** x, float** y, ImageType& newi)
   for(int i = 0; i < N; i++){
     for(int j = 0; j < M; j++){
       xpix = x[i][j];
+      xpix = xpix * pow(-1, i+j);
       //.getPixelVal(i,j,xpix);
       ypix = y[i][j];
+      ypix = ypix * pow(-1, i+j);
       //.getPixelVal(i,j,ypix);
       square = sqrt((xpix * xpix) + (ypix * ypix));
-      square = square * pow(-1,i + j);
+    //  square = square * pow(-1,i + j);
       square = (log2(1 + square));
       newi.setPixelVal(i,j,square);
     }
@@ -230,6 +232,7 @@ int main (){
 	fft2D(N,M,img1,img2,1);
   for(int x = 0; x < N; x++){
     for(int y = 0; y < M; y++){
+    //  cout << img1[x][y] << endl;
       image.setPixelVal(x,y,img1[x][y]);
     }
   }
