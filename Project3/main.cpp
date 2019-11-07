@@ -16,17 +16,20 @@ int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
-void gradientMagn(ImageType x, ImageType y, ImageType& newi)
+
+void gradientMagn(float** x, float** y, ImageType& newi)
 {
-  int xpix;
-  int ypix;
-  int square;
+  float xpix;
+  float ypix;
+  float square;
   int N, M, Q;
-  x.getImageInfo(N,M,Q);
+  newi.getImageInfo(N,M,Q);
   for(int i = 0; i < N; i++){
     for(int j = 0; j < M; j++){
-      x.getPixelVal(i,j,xpix);
-      y.getPixelVal(i,j,ypix);
+      xpix = x[i][j];
+      //.getPixelVal(i,j,xpix);
+      ypix = y[i][j];
+      //.getPixelVal(i,j,ypix);
       square = sqrt((xpix * xpix) + (ypix * ypix));
       newi.setPixelVal(i,j,square);
     }
@@ -82,9 +85,21 @@ void fft(float data[], unsigned long nn, int isign)
 
 
 
-void fft2D(int N, int M, ImageType& real_Fuv, ImageType& imag_Fuv, int isign){
-	std::cout <<N << M <<std::endl;
+void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
+//  if(isign == -1){
 	int x;
+  //float real[N][M];
+  //float imag[N][M];
+  //for(int o = 0; o < N; o++){
+    //for(int u = 0; u < M; u++){
+    //  real_Fuv.getPixelVal(o,u,x);
+    //  cout << x << " ";
+    //  real[o][u] = x;
+    //  imag_Fuv.getPixelVal(o,u,x);
+    //  real[o][u] = x;
+  //    cout << x << " ";
+    //}
+  //cout << real[1][1] << " " << imag[1][1];
 	for(int i = 0; i < N; i++){
 		float arr[M*2+1];
 		for(int count = 0; count < (M*2+1); count++){
@@ -92,27 +107,32 @@ void fft2D(int N, int M, ImageType& real_Fuv, ImageType& imag_Fuv, int isign){
 		}
 		int arr_cntr = 1;
 		for(int j = 0; j < M; j++){
-			real_Fuv.getPixelVal(i,j,x);
-			arr[arr_cntr] = x;
+		//	real_Fuv.getPixelVal(i,j,x);
+			arr[arr_cntr] = real_Fuv[i][j];
+      //cout << x << " ";
 			arr_cntr++;
-			imag_Fuv.getPixelVal(i,j,x);
-			arr[arr_cntr] = x;
+		//	imag_Fuv.getPixelVal(i,j,x);
+			arr[arr_cntr] = imag_Fuv[i][j];
+    //  cout << x << " ";
 			arr_cntr++;
 		}
+    //cout << endl;
 		fft(arr, M, isign);
+		
 		arr_cntr=1;
-		int forward = 1;
+		float forward = 1;
 		if(isign == -1){
 			forward = M;
 		}
 		for(int j = 0; j < M; j++){
-			real_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
-			//real_Fuv[i][j] = arr[arr_cntr]/forward;
+			//real_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
+			real_Fuv[i][j] = arr[arr_cntr]/forward;
 			arr_cntr++;
-			imag_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
-			//imag_Fuv[i][j] = arr[arr_cntr]/forward;
+			//imag_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
+			imag_Fuv[i][j] = arr[arr_cntr]/forward;
 			arr_cntr++;
 		}
+//cout << endl << endl << endl;
 	}
 	for(int i = 0; i < M; i++){
 		float arr[N*2+1];
@@ -121,28 +141,35 @@ void fft2D(int N, int M, ImageType& real_Fuv, ImageType& imag_Fuv, int isign){
 		}
 		int arr_cntr = 1;
 		for(int j = 0; j < N; j++){
-			real_Fuv.getPixelVal(j,i,x);
-			arr[arr_cntr] = x;
+		//	real_Fuv.getPixelVal(j,i,x);
+			arr[arr_cntr] = real_Fuv[j][i];
 			arr_cntr++;
-			imag_Fuv.getPixelVal(j,i,x);
-			arr[arr_cntr] = x;
+		//	imag_Fuv.getPixelVal(j,i,x);
+			arr[arr_cntr] = imag_Fuv[j][i];
 			arr_cntr++;
 		}
 		fft(arr, N, isign);
 		arr_cntr=1;
-		int forward = 1;
+		float forward = 1;
 		if(isign == -1){
 			forward = N;
 		}
 		for(int j = 0; j < N; j++){
-			real_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
-			//real_Fuv[i][j] = arr[arr_cntr]/forward;
+			//real_Fuv.setPixelVal(j,i,(arr[arr_cntr]/forward));
+			real_Fuv[j][i] = arr[arr_cntr]/forward;
 			arr_cntr++;
-			imag_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
-			//imag_Fuv[i][j] = arr[arr_cntr]/forward;
+			//imag_Fuv.setPixelVal(j,i,(arr[arr_cntr]/forward));
+			imag_Fuv[j][i] = arr[arr_cntr]/forward;
 			arr_cntr++;
 		}
-	}
+  }
+  //for(int o = 0; o < N; o++){
+    //for(int u = 0; u < M; u++){
+    //  real_Fuv.setPixelVal(o,u,real[o][u]);
+      //imag_Fuv.setPixelVal(o,u,imag[o][u]);
+    //}
+  //}
+	//}
 }
 
 #undef SWAP
@@ -169,16 +196,42 @@ int main (){
 
 	readImageHeader("lenna.pgm", N, M, Q, type);
 	// allocate memory for the image array
-	ImageType image(N, M, Q);
+	ImageType image(N,M,Q);
 	ImageType imag(N,M,Q);
+  for(int x = 0; x < N; x++){
+    for(int y = 0; y < M; y++){
+      imag.setPixelVal(x,y,0);
+    }
+  }
 	ImageType magn(N,M,Q);
 	// read image
 	readImage("lenna.pgm", image);
-	fft2D(N,M,image,imag,-1);
-	gradientMagn(image,imag,magn);
+  int i;
+  float** img1;
+  img1 = new float*[N];
+  float** img2;
+  img2 = new float*[N];
+  for(int x = 0; x < N; x++){
+    img1[x] = new float[M];
+    img2[x] = new float[M];
+    for(int y = 0; y < M; y++){
+      image.getPixelVal(x,y,i);
+      img1[x][y] = i;
+      imag.getPixelVal(x,y,i);
+      img2[x][y] = i;
+    }
+  }
+
+	fft2D(N,M,img1,img2,-1);
+	gradientMagn(img1,img2,magn);
 	writeImage("lenna1.pgm", magn);
-	fft2D(N,M,image,imag,1);
-	writeImage("lenna2.pgm", image);
+	fft2D(N,M,img1,img2,1);
+  for(int x = 0; x < N; x++){
+    for(int y = 0; y < M; y++){
+      image.setPixelVal(x,y,img1[x][y]);
+    }
+  }
+	writeImage("lenna5.pgm", image);
   return 1;
 
 
