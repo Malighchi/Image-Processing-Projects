@@ -31,6 +31,8 @@ void gradientMagn(float** x, float** y, ImageType& newi)
       ypix = y[i][j];
       //.getPixelVal(i,j,ypix);
       square = sqrt((xpix * xpix) + (ypix * ypix));
+      square = (log2(1 + square));
+      square = square * pow(-1,i + j);
       newi.setPixelVal(i,j,square);
     }
   }
@@ -118,7 +120,7 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 		}
     //cout << endl;
 		fft(arr, M, isign);
-		
+
 		arr_cntr=1;
 		float forward = 1;
 		if(isign == -1){
