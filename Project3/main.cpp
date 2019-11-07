@@ -31,8 +31,8 @@ void gradientMagn(float** x, float** y, ImageType& newi)
       ypix = y[i][j];
       //.getPixelVal(i,j,ypix);
       square = sqrt((xpix * xpix) + (ypix * ypix));
-      square = (log2(1 + square));
       square = square * pow(-1,i + j);
+      square = (log2(1 + square));
       newi.setPixelVal(i,j,square);
     }
   }
