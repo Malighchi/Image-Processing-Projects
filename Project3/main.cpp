@@ -10,11 +10,57 @@
 #include <math.h>
 using namespace std;
 
+double pi = 3.14159265358979323846;
 #define SWAP(a,b) tempr=(a);(a)=(b);(b)=tempr
 
 int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
+void centerIt(ImageType&);
+
+float* generateCos(int u, int N){
+  float* wave = new float[2*N];
+  int start = -(N/2);
+  for(int i = start, count = 0; i < N/2; i++, count++){
+    wave[count] = 0;
+    count++;
+    cout << cos(2*pi*u*(i/N)) << endl;
+    wave[count] = cos(2*pi*u*(i/N));
+  }
+  return wave;
+}
+
+float* phase(float* wave, int nn){
+  float pix;
+  float* ph = new float[nn/2];
+  for(int i = 1; i < nn; i+=2){
+    pix = atan(wave[i+1] / wave[i]);
+    ph[i] = pix;
+  }
+  return ph;
+}
+
+void centerIt(ImageType& img){
+  int N, M, Q;
+  int pix;
+  img.getImageInfo(N,M,Q);
+  for(int i = 0; i < N; i++){
+    for(int j = 0; j < M; j++){
+      if((i - pi/2) < 0 || (j - pi/2) < 0){
+        img.setPixelVal(i,j, 0);
+      }
+      else{
+      img.getPixelVal((i-pi/2),(j-pi/2),pix);
+
+    //  pix = pix * pow(-1, i + j);
+      if(i == 5 && j == 2){
+        cout << pix << endl;
+      }
+      img.setPixelVal(i,j,pix);
+    }
+    }
+  }
+}
 
 
 void gradientMagn(float** x, float** y, ImageType& newi)
@@ -27,14 +73,14 @@ void gradientMagn(float** x, float** y, ImageType& newi)
   for(int i = 0; i < N; i++){
     for(int j = 0; j < M; j++){
       xpix = x[i][j];
-      xpix = xpix * pow(-1, i+j);
+      //xpix = xpix * pow(-1, i+j);
       //.getPixelVal(i,j,xpix);
       ypix = y[i][j];
-      ypix = ypix * pow(-1, i+j);
+      //ypix = ypix * pow(-1, i+j);
       //.getPixelVal(i,j,ypix);
       square = sqrt((xpix * xpix) + (ypix * ypix));
     //  square = square * pow(-1,i + j);
-      square = (log2(1 + square));
+      square = 100 * (log2(1 + square));
       newi.setPixelVal(i,j,square);
     }
   }
@@ -181,24 +227,55 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 int main (){
 	int N,M,Q;
 	bool type;
-	/*
+	//Problem 1.a
   float data[9] = {0,2,0,3,0,4,0,4,0};
   fft(data,4,-1);
   for(int i = 1; i < 9; i++)
     data[i] /= 4;
   for(int i = 1; i < 9; i+=2){
 
-     std::cout << data[i] <<" + "<<data[i+1]<<"j"<<std::endl;
-	 std::cout << "Magnitude: "<<sqrt(((data[i]*data[i])+(data[i+1]*data[i+1])))<<std::endl;
+     cout << data[i] <<" + "<<data[i+1]<<"j"<<endl;
+	 cout << "Magnitude: "<<sqrt(((data[i]*data[i])+(data[i+1]*data[i+1])))<<endl;
   }
-  std::cout << std::endl;
 
   fft(data,4,1);
   for(int i = 1; i < 9; i+=2){
-     std::cout << data[i] << std::endl;
-  }*/
+     cout << data[i] << endl;
+  }
 
-	readImageHeader("lenna.pgm", N, M, Q, type);
+  //Problem 1.b
+
+  ofstream cos,cosr,cosi,cosp,cosm;
+  cos.open("cos.txt",ios::out);
+  cosr.open("cosr.txt",ios::out);
+  cosi.open("cosi.txt",ios::out);
+  cosp.open("cosp.txt",ios::out);
+  cosm.open("cosm.txt",ios::out);
+  float* cosine = new float[256];
+  cosine = generateCos(8,128);
+  for(int i = 1; i < 256; i = i + 2){
+    cos << cosine[i] << " ";
+  }
+  fft(cosine,128, -1);
+  for(int i = 2 ; i < 256; i = i + 2 ){
+    cosi << cosine[i] << " ";
+  }
+  for(int i = 1; i < 256; i = i + 2){
+    cosr << cosine[i] << " ";
+  }
+
+  float* ph = new float[128];
+  ph = phase(cosine, 256);
+  for(int j = 0; j < 128; j++){
+    cosp << ph[j] << " ";
+  }
+
+  for(int j = 0; j < 256; j += 2){
+    cosm << sqrt(((cosine[j]*cosine[j])+(cosine[j+1]*cosine[j+1]))) << " ";
+  }
+
+  //problem 3
+	readImageHeader("square32.pgm", N, M, Q, type);
 	// allocate memory for the image array
 	ImageType image(N,M,Q);
 	ImageType imag(N,M,Q);
@@ -209,7 +286,7 @@ int main (){
   }
 	ImageType magn(N,M,Q);
 	// read image
-	readImage("lenna.pgm", image);
+	readImage("square32.pgm", image);
   int i;
   float** img1;
   img1 = new float*[N];
@@ -228,7 +305,9 @@ int main (){
 
 	fft2D(N,M,img1,img2,-1);
 	gradientMagn(img1,img2,magn);
-	writeImage("lenna1.pgm", magn);
+  writeImage("square32_magn.pgm", magn);
+  centerIt(magn);
+	writeImage("square32_n.pgm", magn);
 	fft2D(N,M,img1,img2,1);
   for(int x = 0; x < N; x++){
     for(int y = 0; y < M; y++){
@@ -236,7 +315,7 @@ int main (){
       image.setPixelVal(x,y,img1[x][y]);
     }
   }
-	writeImage("lenna5.pgm", image);
+	writeImage("square32_m.pgm", image);
   return 1;
 
 
