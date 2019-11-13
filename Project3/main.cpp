@@ -266,6 +266,10 @@ int main (){
   fft(cosine,128, -1);
 
   out_count = -64;
+  for(int i = 0; i < 257; i++){
+    cosine[i] /= 128;
+  }
+
   for(int i = 2 ; i < 257; i = i + 2 ){
     if(abs(cosine[i]) < .00001){
       cosine[i] = 0;
@@ -300,6 +304,9 @@ int main (){
 
   //problem 1.c
   float rectangle[257];
+  for(int i = 0; i < 257; i++){
+    rectangle[i] = 0;
+  }
   for(int i = 1; i < 257; i+=2){
     if(i > 64 && i < 193){
       rectangle[i] = 1.0 * pow(-1,(i/2));
@@ -327,6 +334,9 @@ int main (){
   }
   fft(rectangle,128, -1);
 
+  for(int i = 0; i < 257; i++){
+    rectangle[i] /= 128;
+  }
   out_count = -64;
   for(int i = 2 ; i < 257; i = i + 2 ){
     if(abs(rectangle[i]) < .00001){
