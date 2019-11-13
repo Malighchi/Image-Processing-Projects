@@ -252,28 +252,50 @@ int main (){
   cosm.open("cosm.txt",ios::out);
   float* cosine = new float[257];
   cosine = generateCos(8,128);
+
+  int out_count = -64;
   for(int i = 1; i < 257; i = i + 2){
-    cos << cosine[i] << endl;
+    if(abs(cosine[i]) < .00001){
+      cosine[i] = 0;
+    }
+    cos <<"("<<out_count<<", "<< cosine[i] <<")"<< endl;
+    out_count++;
   //  cosine[i] = cosine[i] * pow(-1,i);
   }
 
   fft(cosine,128, -1);
 
+  out_count = -64;
   for(int i = 2 ; i < 257; i = i + 2 ){
-    cosi << cosine[i] << endl;
+    if(abs(cosine[i]) < .00001){
+      cosine[i] = 0;
+    }
+    cosi <<"("<<out_count<<", "<< cosine[i] <<")"<< endl;
+    out_count++;
   }
+  out_count = -64;
   for(int i = 1; i < 257; i = i + 2){
-    cosr << cosine[i] << endl;
+    if(abs(cosine[i]) < .00001){
+      cosine[i] = 0;
+    }
+    cosr <<"("<<out_count<<", "<< cosine[i] <<")"<< endl;
+    out_count++;
   }
 
   float* ph = new float[128];
   ph = phase(cosine, 256);
+  out_count = -64;
   for(int j = 0; j < 128; j++){
-    cosp << ph[j] << endl;
+    if(abs(ph[j]) < .00001){
+      ph[j] = 0;
+    }
+    cosp <<"("<<out_count<<", "<< ph[j] <<")"<< endl;
+    out_count++;
   }
-
+  out_count = -64;
   for(int j = 1; j < 256; j += 2){
-    cosm << sqrt(((cosine[j]*cosine[j])+(cosine[j+1]*cosine[j+1]))) << endl;
+    cosm <<"("<<out_count<<", "<< sqrt(((cosine[j]*cosine[j])+(cosine[j+1]*cosine[j+1]))) <<")"<< endl;
+    out_count++;
   }
 
   //problem 1.c
@@ -293,29 +315,50 @@ int main (){
   recti.open("recti.txt",ios::out);
   rectp.open("rectp.txt",ios::out);
   rectm.open("rectm.txt",ios::out);
-
+  out_count = -64;
   for(int i = 1; i < 257; i = i + 2){
-    rect << rectangle[i] << endl;
+    if(abs(rectangle[i]) < .00001){
+      rectangle[i] = 0;
+    }
+    rect <<"("<<out_count<<", "<<rectangle[i] <<")"<< endl;
+    out_count++;
   //  cosine[i] = cosine[i] * pow(-1,i);
-  }
 
+  }
   fft(rectangle,128, -1);
 
+  out_count = -64;
   for(int i = 2 ; i < 257; i = i + 2 ){
-    recti << rectangle[i] << endl;
+    if(abs(rectangle[i]) < .00001){
+      rectangle[i] = 0;
+    }
+    recti <<"("<<out_count<<", "<<rectangle[i] <<")"<< endl;
+    out_count++;
   }
+  out_count = -64;
   for(int i = 1; i < 257; i = i + 2){
-    rectr << rectangle[i] << endl;
+    if(abs(rectangle[i]) < .00001){
+      rectangle[i] = 0;
+    }
+    rectr <<"("<<out_count<<", "<<rectangle[i] <<")"<< endl;
+    out_count++;
   }
 
   float* phr = new float[128];
-  ph = phase(cosine, 256);
+  phr = phase(rectangle, 256);
+  out_count = -64;
   for(int j = 0; j < 128; j++){
-    rectp << phr[j] << endl;
+    if(abs(phr[j]) < .00001){
+      phr[j] = 0;
+    }
+    rectp <<"("<<out_count<<", "<< phr[j] <<")"<< endl;
+    out_count++;
   }
 
+  out_count = -64;
   for(int j = 1; j < 256; j += 2){
-    rectm << sqrt(((rectangle[j]*rectangle[j])+(rectangle[j+1]*rectangle[j+1]))) << endl;
+    rectm <<"("<<out_count<<", "<< sqrt(((rectangle[j]*rectangle[j])+(rectangle[j+1]*rectangle[j+1]))) <<")"<< endl;
+    out_count++;
   }
 
 
