@@ -18,14 +18,18 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 void centerIt(ImageType&);
 
-float* generateCos(int u, int N){
-  float* wave = new float[2*N];
-  int start = -(N/2);
-  for(int i = start, count = 0; i < N/2; i++, count++){
+float* generateCos(float u, float N){
+  int n = N;
+  float* wave = new float[2*n];
+  float start = -(N/2);
+  int count = 0;
+  for(float i = 0; i < N; i++, count++){
+    //cout << i << endl;
     wave[count] = 0;
     count++;
-    cout << cos(2*pi*u*(i/N)) << endl;
-    wave[count] = cos(2*pi*u*(i/N));
+    //cout << cos(2*pi*u*(i/N)) << endl;
+    wave[count] = (cos(2*pi*u*(i/N))) * pow(-1, i);
+    cout << wave[count] << endl;
   }
   return wave;
 }
@@ -46,21 +50,16 @@ void centerIt(ImageType& img){
   img.getImageInfo(N,M,Q);
   for(int i = 0; i < N; i++){
     for(int j = 0; j < M; j++){
-      if((i - pi/2) < 0 || (j - pi/2) < 0){
-        img.setPixelVal(i,j, 0);
-      }
-      else{
-      img.getPixelVal((i-pi/2),(j-pi/2),pix);
 
-    //  pix = pix * pow(-1, i + j);
-      if(i == 5 && j == 2){
-        cout << pix << endl;
-      }
+      img.getPixelVal(i,j,pix);
+
+      pix = pix * pow(-1, i + j);
+
       img.setPixelVal(i,j,pix);
     }
     }
   }
-}
+
 
 
 void gradientMagn(float** x, float** y, ImageType& newi)
@@ -251,31 +250,78 @@ int main (){
   cosi.open("cosi.txt",ios::out);
   cosp.open("cosp.txt",ios::out);
   cosm.open("cosm.txt",ios::out);
-  float* cosine = new float[256];
+  float* cosine = new float[257];
   cosine = generateCos(8,128);
-  for(int i = 1; i < 256; i = i + 2){
-    cos << cosine[i] << " ";
+  for(int i = 1; i < 257; i = i + 2){
+    cos << cosine[i] << endl;
+  //  cosine[i] = cosine[i] * pow(-1,i);
   }
+
   fft(cosine,128, -1);
-  for(int i = 2 ; i < 256; i = i + 2 ){
-    cosi << cosine[i] << " ";
+
+  for(int i = 2 ; i < 257; i = i + 2 ){
+    cosi << cosine[i] << endl;
   }
-  for(int i = 1; i < 256; i = i + 2){
-    cosr << cosine[i] << " ";
+  for(int i = 1; i < 257; i = i + 2){
+    cosr << cosine[i] << endl;
   }
 
   float* ph = new float[128];
   ph = phase(cosine, 256);
   for(int j = 0; j < 128; j++){
-    cosp << ph[j] << " ";
+    cosp << ph[j] << endl;
   }
 
-  for(int j = 0; j < 256; j += 2){
-    cosm << sqrt(((cosine[j]*cosine[j])+(cosine[j+1]*cosine[j+1]))) << " ";
+  for(int j = 1; j < 256; j += 2){
+    cosm << sqrt(((cosine[j]*cosine[j])+(cosine[j+1]*cosine[j+1]))) << endl;
   }
 
-  //problem 3
-	readImageHeader("square32.pgm", N, M, Q, type);
+  //problem 1.c
+  float rectangle[257];
+  for(int i = 1; i < 257; i+=2){
+    if(i > 64 && i < 193){
+      rectangle[i] = 1.0 * pow(-1,(i/2));
+    }
+    else{
+      rectangle[i] = 0.0;
+    }
+  }
+
+  ofstream rect,rectr,recti,rectp,rectm;
+  rect.open("rect.txt",ios::out);
+  rectr.open("rectr.txt",ios::out);
+  recti.open("recti.txt",ios::out);
+  rectp.open("rectp.txt",ios::out);
+  rectm.open("rectm.txt",ios::out);
+
+  for(int i = 1; i < 257; i = i + 2){
+    rect << rectangle[i] << endl;
+  //  cosine[i] = cosine[i] * pow(-1,i);
+  }
+
+  fft(rectangle,128, -1);
+
+  for(int i = 2 ; i < 257; i = i + 2 ){
+    recti << rectangle[i] << endl;
+  }
+  for(int i = 1; i < 257; i = i + 2){
+    rectr << rectangle[i] << endl;
+  }
+
+  float* phr = new float[128];
+  ph = phase(cosine, 256);
+  for(int j = 0; j < 128; j++){
+    rectp << phr[j] << endl;
+  }
+
+  for(int j = 1; j < 256; j += 2){
+    rectm << sqrt(((rectangle[j]*rectangle[j])+(rectangle[j+1]*rectangle[j+1]))) << endl;
+  }
+
+
+
+  //problem 2
+	readImageHeader("square128.pgm", N, M, Q, type);
 	// allocate memory for the image array
 	ImageType image(N,M,Q);
 	ImageType imag(N,M,Q);
@@ -286,12 +332,13 @@ int main (){
   }
 	ImageType magn(N,M,Q);
 	// read image
-	readImage("square32.pgm", image);
+	readImage("square128.pgm", image);
   int i;
   float** img1;
   img1 = new float*[N];
   float** img2;
   img2 = new float*[N];
+//  centerIt(image);
   for(int x = 0; x < N; x++){
     img1[x] = new float[M];
     img2[x] = new float[M];
@@ -305,9 +352,9 @@ int main (){
 
 	fft2D(N,M,img1,img2,-1);
 	gradientMagn(img1,img2,magn);
-  writeImage("square32_magn.pgm", magn);
-  centerIt(magn);
-	writeImage("square32_n.pgm", magn);
+  writeImage("square128_magn_unshift.pgm", magn);
+
+	//writeImage("square32_n.pgm", magn);
 	fft2D(N,M,img1,img2,1);
   for(int x = 0; x < N; x++){
     for(int y = 0; y < M; y++){
@@ -315,7 +362,7 @@ int main (){
       image.setPixelVal(x,y,img1[x][y]);
     }
   }
-	writeImage("square32_m.pgm", image);
+//	writeImage("square64_m.pgm", image);
   return 1;
 
 
