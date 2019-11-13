@@ -29,7 +29,7 @@ float* generateCos(float u, float N){
     count++;
     //cout << cos(2*pi*u*(i/N)) << endl;
     wave[count] = (cos(2*pi*u*(i/N))) * pow(-1, i);
-    cout << wave[count] << endl;
+  //  cout << wave[count] << endl;
   }
   return wave;
 }
