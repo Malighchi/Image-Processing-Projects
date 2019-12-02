@@ -20,6 +20,33 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign);
 
 
 
+void gausfilter(ImageType img, ImageType& filterimg, int filtersize, int N, int M, float mask[]){
+    float applied = 0;
+    int curr_mask = 0;
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < M; j++){
+            for(int s = (-filtersize/2); s <= (filtersize/2); s++){
+                for(int t = (-filtersize/2); t <= (filtersize/2); t++){
+                    int value = 0;
+                    if(((i+s)<0 || (i+s)>=N) || ((j+t)<0 || (j+t)>=M)){
+                        applied+=0;
+                    }
+                    else{
+                        img.getPixelVal(i+s, j+t, value);
+                        applied += (value*mask[curr_mask]);
+                    }
+                    curr_mask++;
+                }
+            }
+
+            filterimg.setPixelVal(i, j, applied);
+
+            applied = 0;
+            curr_mask = 0;
+        }
+
+    }
+}
 
 void addMotionBlur(ImageType& img, int N, int M){
 
@@ -333,7 +360,50 @@ int main (){
   img1 = new float*[N];
   float** img2;
   img2 = new float*[N];
+	float** gaus_img1;
+	float** gaus_img2;
+	gaus_img1 = new float*[N];
+	gaus_img2 = new float*[N];
+
+	float gausmask15 [225] = {2, 2, 3, 4, 5, 5, 6, 6, 6, 5, 5, 4, 3, 2, 2,
+		                       2, 3, 4, 5, 7, 7, 8, 8, 8, 7, 7, 5, 4, 3, 2,
+		                       3, 4, 6, 7, 9, 10, 10, 11, 10, 10, 9, 7, 6, 4, 3,
+		                       4, 5, 7, 9, 10, 12, 13, 13, 13, 12, 10, 9, 7, 5, 4,
+		                       5, 7, 9, 11, 13, 14, 15, 16, 15, 14, 13, 11, 9, 7, 5,
+		                       5, 7, 10, 12, 14, 16, 17, 18, 17, 16, 14, 12, 10, 7, 5,
+		                       6, 8, 10, 13, 15, 17, 19, 19, 19, 17, 15, 13, 10, 8, 6,
+		                       6, 8, 11, 13, 16, 18, 19, 20, 19, 18, 16, 13, 11, 8, 6,
+		                       6, 8, 10, 13, 15, 17, 19, 19, 19, 17, 15, 13, 10, 8, 6,
+		                       5, 7, 10, 12, 14, 16, 17, 18, 17, 16, 14, 12, 10, 7, 5,
+		                       5, 7, 9, 11, 13, 14, 15, 16, 15, 14, 13, 11, 9, 7, 5,
+		                       4, 5, 7, 9, 10, 12, 13, 13, 13, 12, 10, 9, 7, 5, 4,
+		                       3, 4, 6, 7, 9, 10, 10, 11, 10, 10, 9, 7, 6, 4, 3,
+		                       2, 3, 4, 5, 7, 7, 8, 8, 8, 7, 7, 5, 4, 3, 2,
+		                       2, 2, 3, 4, 5, 5, 6, 6, 6, 5, 5, 4, 3, 2, 2};
+
+	int sum15 = 0;
+    for(int i = 0; i<225; i++){
+        sum15+=gausmask15[i];
+    }
+    for(int i = 0; i<225; i++){
+        gausmask15[i]=gausmask15[i]/sum15;
+    }
+	ImageType boygaus(N,M,Q);
+	ImageType gausimg(N,M,Q);
+	gausfilter(image, gausimg, 15, N, M, gausmask15);
+	for(int x = 0; x < N; x++){
+		gaus_img1[x] = new float[M];
+		gaus_img2[x] = new float[M];
+		for(int y = 0; y < M; y++){
+			gausimg.getPixelVal(x,y,i);
+			gaus_img1[x][y] = i;
+			gausimg.getPixelVal(x,y,i);
+			gaus_img2[x][y] = i;
+		}
+	}
+	writeImage("boy_denoised_gaus.pgm", gausimg);
   centerIt(image);
+	centerIt(gausimg);
   for(int x = 0; x < N; x++){
     img1[x] = new float[M];
     img2[x] = new float[M];
@@ -345,13 +415,26 @@ int main (){
     }
   }
 
+	for(int x = 0; x < N; x++){
+		for(int y = 0; y < M; y++){
+			gausimg.getPixelVal(x,y,i);
+			gaus_img1[x][y] = i;
+			gausimg.getPixelVal(x,y,i);
+			gaus_img2[x][y] = i;
+		}
+	}
+
+
+	fft2D(N,M,gaus_img1,gaus_img2, -1);
 	fft2D(N,M,img1,img2,-1);
 
-
+	magn(gaus_img1, gaus_img2, boygaus);
   magn(img1,img2,magni);
 
   writeImage("boy_noisy_magn_unshift.pgm", magni);
+	writeImage("boy_noisy_gaus.pgm", boygaus);
   //Exercise 1
+
   int* impulse_arr = detectCosineImpulse(img1, N, M);
   extractNoise(img1, img2, impulse_arr, N, M, Q);
   denoiseCosine(img1, impulse_arr, N, M);
@@ -363,21 +446,31 @@ int main (){
     }
   }
   centerIt(image);
-	writeImage("boy_denoised.pgm", image);
+	writeImage("boy_denoised_fft.pgm", image);
+
 
   //Exercise 2
 	float** sobel_kernel;
 	float** imag_kernel;
-	sobel_kernel = new float*[3];
-	imag_kernel = new float*[3];
+	sobel_kernel = new float*[6];
+	imag_kernel = new float*[6];
 	for(int x = 0; x < 3; x++){
-		sobel_kernel[x] = new float[3];
-		imag_kernel[x] = new float[3];
+		sobel_kernel[x] = new float[6];
+		imag_kernel[x] = new float[6];
 	}
 
-	sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[1][0] = -2, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 2,
-	sobel_kernel[2][0] = -1, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = 1;
+	sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
+	sobel_kernel[1][0] = -2, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 2, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
+	sobel_kernel[2][0] = -1, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
+	sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
+	sobel_kernel[1][0] = -2, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 2, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
+	sobel_kernel[2][0] = -1, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1;
+	ImageType sobel(3,3,Q);
+	ImageType freq_filtered(N+2, M+2, Q);
+	ImageType spat_filtered(N+2, M+2, Q);
+	readImageHeader("lenna.pgm", N, M, Q);
+	ImageType lenna(N,M,Q);
+	readImage
 
 
 
