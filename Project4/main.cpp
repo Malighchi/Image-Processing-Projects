@@ -454,17 +454,17 @@ int main (){
 	float** imag_kernel;
 	sobel_kernel = new float*[6];
 	imag_kernel = new float*[6];
-	for(int x = 0; x < 3; x++){
+	for(int x = 0; x < 6; x++){
 		sobel_kernel[x] = new float[6];
 		imag_kernel[x] = new float[6];
 	}
 
-	sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[1][0] = -2, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 2, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[2][0] = -1, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[1][0] = -2, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 2, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1,
-	sobel_kernel[2][0] = -1, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = 1, sobel_kernel[0][0] = -1, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 1;
+	sobel_kernel[0][0] = 0, sobel_kernel[0][1] = 0, sobel_kernel[0][2] = 0, sobel_kernel[0][3] = 0, sobel_kernel[0][4] = 0, sobel_kernel[0][5] = 0,
+	sobel_kernel[1][0] = 0, sobel_kernel[1][1] = 0, sobel_kernel[1][2] = 0, sobel_kernel[1][3] = 0, sobel_kernel[1][4] = 0, sobel_kernel[1][5] = 0,
+	sobel_kernel[2][0] = 0, sobel_kernel[2][1] = 0, sobel_kernel[2][2] = -1, sobel_kernel[2][3] = 0, sobel_kernel[2][4] = 1, sobel_kernel[2][5] = 0,
+	sobel_kernel[3][0] = 0, sobel_kernel[3][1] = 0, sobel_kernel[3][2] = -2, sobel_kernel[3][3] = 0, sobel_kernel[3][4] = 2, sobel_kernel[3][5] = 0,
+	sobel_kernel[4][0] = 0, sobel_kernel[4][1] = 0, sobel_kernel[4][2] = -1, sobel_kernel[4][3] = 0, sobel_kernel[4][4] = 1, sobel_kernel[4][5] = 0,
+	sobel_kernel[5][0] = 0, sobel_kernel[5][1] = 0, sobel_kernel[5][2] = 0, sobel_kernel[5][3] = 0, sobel_kernel[5][4] = 0, sobel_kernel[5][5] = 0;
 	ImageType sobel(3,3,Q);
 	ImageType freq_filtered(N+2, M+2, Q);
 	ImageType spat_filtered(N+2, M+2, Q);
