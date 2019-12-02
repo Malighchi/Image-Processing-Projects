@@ -466,12 +466,34 @@ int main (){
 	sobel_kernel[4][0] = 0, sobel_kernel[4][1] = 0, sobel_kernel[4][2] = -1, sobel_kernel[4][3] = 0, sobel_kernel[4][4] = 1, sobel_kernel[4][5] = 0,
 	sobel_kernel[5][0] = 0, sobel_kernel[5][1] = 0, sobel_kernel[5][2] = 0, sobel_kernel[5][3] = 0, sobel_kernel[5][4] = 0, sobel_kernel[5][5] = 0;
 	ImageType sobel(3,3,Q);
-	ImageType freq_filtered(N+2, M+2, Q);
-	ImageType spat_filtered(N+2, M+2, Q);
+	ImageType freq_filtered(N, M, Q);
+	ImageType spat_filtered(N, M, Q);
 	readImageHeader("lenna.pgm", N, M, Q);
 	ImageType lenna(N,M,Q);
-	readImage
+	readImage("lenna.pgm", lenna);
+
+  float** real_lenna;
+	float** imag_lenna;
+	real_lenna = new float*[2*N];
+	imag_lenna = new float*[2*N];
+	for(int x = 0; x < 3; x++){
+		real_lenna[x] = new float[2*M];
+		imag_lenna[x] = new float[2*M];
+	}
 
 
+  for(int i = 0; i < 2* N; i++){
+    for(int j = 0; j < 2* M; j++){
+      real_lenna[i][j] = 0;
+      imag_lenna[i][j] = 0;
+    }
+  }
+  for(int i = 0; i < N; i++){
+    for(int j = 0; j < M; j++){
+      int value = 0;
+      lenna.getPixelVal(i, j, value);
+      real_lenna[i][j] = value;
+    }
+  }
 
 }
