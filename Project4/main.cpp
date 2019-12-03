@@ -20,11 +20,14 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign);
 
 
 float** createSobel(int N, int M, float** freq){
+
 	for(int i = 0; i < N; i++){
+		cout << i << endl;
 		for(int j = 0; j < M; j++){
 			freq[i][j] = 0;
 		}
 	}
+
 	for(int i = 0; i < N-2; i++){
 		for(int j = 0; j < M-2; j++){
 			freq[i][j] = -1;
@@ -36,8 +39,7 @@ float** createSobel(int N, int M, float** freq){
 			freq[i+1][j+2] = 2;
 			freq[i+2][j+1] = 0;
 			freq[i+2][j+2] = 1;
-			if((freq[i][j] == -freq[N-i][M-j])){
-				cout << "here" << endl;
+			if(i!=0 && j!= 0 && (freq[i][j] == -freq[N-i][M-j])){
 					return freq;
 				}
 				else{
@@ -237,7 +239,7 @@ void extractNoise(float** r_img, float** i_img, int* impulses, int N, int M, int
   fft2D(N,M,noise_r,noise_i,1);
   for(int x = 0; x < N; x++){
     for(int y = 0; y < M; y++){
-    //  cout << img1[x][y] << endl;
+
       noise.setPixelVal(x,y,noise_r[x][y]);
     }
   }
@@ -282,13 +284,11 @@ void magn(float** x, float** y, ImageType& newi, int N, int M)
 
     for(int j = 0; j < M; j++){
       xpix = x[i][j];
-      //xpix = xpix * pow(-1, i+j);
-      //.getPixelVal(i,j,xpix);
+
       ypix = y[i][j];
-      //ypix = ypix * pow(-1, i+j);
-      //.getPixelVal(i,j,ypix);
+
       square = sqrt((xpix * xpix) + (ypix * ypix));
-    //  square = square * pow(-1,i + j);
+
       square = 1000 * (log2(1 + square));
       newi.setPixelVal(i,j,square);
     }
@@ -354,16 +354,16 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 		}
 		int arr_cntr = 1;
 		for(int j = 0; j < M; j++){
-		//	real_Fuv.getPixelVal(i,j,x);
+
 			arr[arr_cntr] = real_Fuv[i][j];
-      //cout << x << " ";
+
 			arr_cntr++;
-		//	imag_Fuv.getPixelVal(i,j,x);
+
 			arr[arr_cntr] = imag_Fuv[i][j];
-    //  cout << x << " ";
+
 			arr_cntr++;
 		}
-    //cout << endl;
+
 		fft(arr, M, isign);
 
 		arr_cntr=1;
@@ -372,14 +372,14 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 			forward = M;
 		}
 		for(int j = 0; j < M; j++){
-			//real_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
+
 			real_Fuv[i][j] = arr[arr_cntr]/forward;
 			arr_cntr++;
-			//imag_Fuv.setPixelVal(i,j,(arr[arr_cntr]/forward));
+
 			imag_Fuv[i][j] = arr[arr_cntr]/forward;
 			arr_cntr++;
 		}
-//cout << endl << endl << endl;
+
 	}
 	for(int i = 0; i < M; i++){
 		float arr[N*2+1];
@@ -388,10 +388,10 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 		}
 		int arr_cntr = 1;
 		for(int j = 0; j < N; j++){
-		//	real_Fuv.getPixelVal(j,i,x);
+
 			arr[arr_cntr] = real_Fuv[j][i];
 			arr_cntr++;
-		//	imag_Fuv.getPixelVal(j,i,x);
+
 			arr[arr_cntr] = imag_Fuv[j][i];
 			arr_cntr++;
 		}
@@ -402,10 +402,10 @@ void fft2D(int N, int M, float** real_Fuv, float** imag_Fuv, int isign){
 			forward = N;
 		}
 		for(int j = 0; j < N; j++){
-			//real_Fuv.setPixelVal(j,i,(arr[arr_cntr]/forward));
+
 			real_Fuv[j][i] = arr[arr_cntr]/forward;
 			arr_cntr++;
-			//imag_Fuv.setPixelVal(j,i,(arr[arr_cntr]/forward));
+
 			imag_Fuv[j][i] = arr[arr_cntr]/forward;
 			arr_cntr++;
 		}
@@ -529,20 +529,24 @@ int main (){
 
 
   //Exercise 2
+
+
+
+	readImageHeader("lenna.pgm", N, M, Q, type);
+	ImageType lenna(N,M,Q);
+	readImage("lenna.pgm", lenna);
+
+	ImageType freq_filtered(2*N, 2*M, Q);
+	ImageType spat_filtered(N, M, Q);
+
 	float** sobel_kernel;
 	float** imag_kernel;
 	sobel_kernel = new float*[2*N];
 	imag_kernel = new float*[2*N];
-	for(int x = 0; x < 2*M; x++){
+	for(int x = 0; x < 2*N; x++){
 		sobel_kernel[x] = new float[2*M];
 		imag_kernel[x] = new float[2*M];
 	}
-
-	ImageType freq_filtered(2*N, 2*M, Q);
-	ImageType spat_filtered(N, M, Q);
-	readImageHeader("lenna.pgm", N, M, Q, type);
-	ImageType lenna(N,M,Q);
-	readImage("lenna.pgm", lenna);
 
   float** real_lenna;
 	float** imag_lenna;
@@ -554,8 +558,8 @@ int main (){
 	}
 
 
-  for(int i = 0; i < 2* N; i++){
-    for(int j = 0; j < 2* M; j++){
+  for(int i = 0; i < 2*N; i++){
+    for(int j = 0; j < 2*M; j++){
       real_lenna[i][j] = 0;
       imag_lenna[i][j] = 0;
     }
@@ -569,25 +573,26 @@ int main (){
     }
   }
 	sobel_kernel = createSobel(2*N,2*M, sobel_kernel);
-	cout << "hello" << endl;
 	centerFloat(real_lenna,2*N,2*M);
 	centerFloat(sobel_kernel, 2*N, 2*M);
-
 	fft2D(2*N,2*M,sobel_kernel, imag_kernel, -1);
 	fft2D(2*N,2*M,real_lenna,imag_lenna,-1);
-	for(int i = 0; i < 6; i++){
-		for(int j = 0; j < 6; j++){
-			cout << imag_kernel[i][j] << " ";
-			real_lenna[i][j] = sobel_kernel[i][j] * real_lenna[i][j];
-			imag_lenna[i][j] = imag_kernel[i][j] * imag_lenna[i][j];
-		}
-		cout << endl;
-	}
-	fft2D(2*N,2*M, real_lenna, imag_lenna, 1);
-	cout << "hi" << endl;
+	//magn(sobel_kernel, imag_kernel, freq_filtered, 2*N,2*M);
 	for(int i = 0; i < 2*N; i++){
 		for(int j = 0; j < 2*M; j++){
-			freq_filtered.setPixelVal(i,j, real_lenna[i][j]);
+			sobel_kernel[i][j] = 0;
+			if(imag_kernel[i][j] > 0.1)
+				cout<< sobel_kernel[i][j] << " " << imag_kernel[i][j] << " ";
+		//	sobel_kernel[i][j] = 0;
+		//	real_lenna[i][j] = sobel_kernel[i][j] * real_lenna[i][j];
+		//	imag_lenna[i][j] = imag_kernel[i][j] * imag_lenna[i][j];
+		}
+	}
+
+	fft2D(2*N,2*M, real_lenna, imag_lenna, 1);
+	for(int i = 0; i < 2*N; i++){
+		for(int j = 0; j < 2*M; j++){
+		//	freq_filtered.setPixelVal(i,j, real_lenna[i][j]);
 		}
 	}
 	//centerIt(freq_filtered);
